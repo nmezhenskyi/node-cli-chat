@@ -11,6 +11,11 @@ export class ChatClient {
    cli: IOController
 
    constructor(host: string, port: number) {
+      this.cli = new IOController()
+      this.cli.on('say', this.writeToServer.bind(this))
+      this.cli.on('close', this.disconnect.bind(this))
+      this.cli.write('Welcome to node-cli-chat!\n')
+
       this.socket = new net.Socket()
       this.socket.setEncoding('utf-8')
       this.socket.connect(port, host)
@@ -20,13 +25,9 @@ export class ChatClient {
 
       this.lineBuffer = new SocketLineBuffer(this.socket)
       this.lineBuffer.on('line', this.register.bind(this))
-
-      this.cli = new IOController()
-      this.cli.on('say', this.writeToServer.bind(this))
-      this.cli.on('close', this.disconnect.bind(this))
    }
 
-   async register(message: string) {
+   private async register(message: string) {
       console.log(message)
       const name = await this.cli.prompt()
       this.writeToServer(name)
@@ -37,20 +38,22 @@ export class ChatClient {
       await this.cli.runInputLoop()
    }
 
-   readLine(message: string) {
+   private readLine(message: string) {
       this.cli.clearLine()
       this.cli.write(`${message}\n> `)
    }
 
-   handleError(error: Error) {
-      this.cli.write(error.message)
+   private handleError(error: Error) {
+      this.cli.write(`Encountered error: ${error.message}\n`)
    }
 
-   handleClose() {
-      console.log('Disconnected.')
+   private handleClose(error: boolean) {
+      if (error) return
+      this.cli.clearLine()
+      this.cli.write('Disconnected.\n')
    }
 
-   writeToServer(message: string) {
+   private writeToServer(message: string) {
       this.socket.write(`${message}\n`, 'utf-8')
    }
 

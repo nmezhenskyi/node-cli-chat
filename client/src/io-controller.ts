@@ -2,14 +2,13 @@ import readline from 'readline'
 import { stdin, stdout } from 'node:process'
 import { EventEmitter } from 'events'
 
-
 /**
  * Handles I/O operations using specified read/write streams.  
  * By default uses stdin/stdout.
  */
 export class IOController extends EventEmitter {
-   private input
-   private output
+   private input: NodeJS.ReadStream
+   private output: NodeJS.WriteStream
 
    constructor(input = stdin, output = stdout) {
       super()
@@ -44,7 +43,10 @@ export class IOController extends EventEmitter {
             }
             
             if (line === '/h' || line === '/help') {
-               console.log('Help message')
+               this.write('CLI Commands:\n'
+                  + '  * \'[message]\' + enter to send message\n'
+                  + '  * \'/q\' + enter to quit\n'
+                  + '  * \'/h\' + enter to view commands\n')
             }
             else {
                this.emit('say', line)
@@ -54,6 +56,11 @@ export class IOController extends EventEmitter {
          })
    
          rl.on('close', resolve)
+
+         rl.on('SIGINT', () => {
+            rl.close()
+            process.emit('SIGINT', 'SIGINT')
+         })
       })
    }
 
