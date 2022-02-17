@@ -17,11 +17,7 @@ const main = () => {
 
       const server = new ChatServer(HOST, PORT)
 
-      process.on('SIGINT', () => {
-         console.log()
-         server.close()
-         setImmediate(() => process.exit(0))
-      })
+      process.on('SIGINT', () => server.close())
    }
    catch (error: unknown) {
       console.error(error)

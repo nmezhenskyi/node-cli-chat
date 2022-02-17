@@ -40,7 +40,7 @@ export class ChatServer {
       this.server.on('error', this.handleError.bind(this))
       this.server.on('close', this.handleClose.bind(this))
       this.server.listen(port, host, () => {
-         console.log(`Server started on ${host}:${port}.`)
+         console.log(`* Server started on ${host}:${port} *`)
       })
    }
 
@@ -63,9 +63,8 @@ export class ChatServer {
     * @param user Registered user
     */
    private handleJoin(user: User): void {
-      console.log(`${user.username} has joined the chat room.`)
       this.addUser(user)
-      this.broadcast(`${user.username} has joined the chat room.`)
+      this.broadcast(`* ${user.username} has joined the chat room *`)
    }
 
    /**
@@ -75,7 +74,6 @@ export class ChatServer {
     * @param message Sent message
     */
    private handleSay(user: User, message: string): void {
-      console.log(`${user.username}: ${message}`)
       this.broadcastExcept(user, `${user.username}: ${message}`)
    }
 
@@ -85,25 +83,25 @@ export class ChatServer {
     * @param user User who left the server
     */
    private handleLeave(user: User): void {
-      console.log(`${user.username} has left the chat room.`)
       this.removeUser(user)
-      this.broadcast(`${user.username} has left the chat room.`)
+      this.broadcast(`* ${user.username} has left the chat room *`)
    }
 
    /**
-    * Called when the server encountered an error.
+    * Called when the server encountered an error.  
+    * Throws the error.
     * 
     * @param error Encountered errror
     */
    private handleError(error: Error): void {
-      console.error(error)
+      throw error
    }
 
    /**
     * Called when the server has been closed.
     */
    private handleClose(): void {
-      console.log('Server has been shutdown.')
+      console.log('* Server has been shutdown *')
    }
 
    /**
@@ -239,7 +237,7 @@ class User extends EventEmitter {
     */
    join(username: string): void {
       if (!this.server.isUsernameValid(username)) {
-         this.writeToClient('Selected name is invalid or already taken.')
+         this.writeToClient('* Selected name is invalid or already taken *')
          this.writeToClient('Please select a different one:')
          return
       }
