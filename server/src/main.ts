@@ -2,7 +2,8 @@
  * Copyright (c) 2022 Nikita Mezhenskyi
  * All rights reserved.
  * 
- * This source code is licensed under MIT license (see LICENSE.md).
+ * This source code is licensed under MIT license (see LICENSE.md)
+ * unless otherwise noted.
  * 
  */
 

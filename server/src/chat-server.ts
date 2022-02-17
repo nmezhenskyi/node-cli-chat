@@ -7,6 +7,12 @@ import { SocketLineBuffer } from './socket-line-buffer'
  * Represents TCP chat server.
  * 
  * Listens for connections, registers users, broadcasts user messages.
+ * 
+ * 
+ * @license GNU Free Documentation License 1.2
+ * 
+ * This class is a derivative work of a Rosetta Code solution
+ * https://rosettacode.org/wiki/Chat_server#JavaScript.
  */
 export class ChatServer {
    /**
@@ -174,6 +180,12 @@ export class ChatServer {
 
 /**
  * Represents a single user connection to the server.
+ * 
+ * 
+ * @license GNU Free Documentation License 1.2
+ * 
+ * This class is a derivative work of a Rosetta Code solution
+ * https://rosettacode.org/wiki/Chat_server#JavaScript.
  */
 class User extends EventEmitter {
    /**

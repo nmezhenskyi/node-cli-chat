@@ -8,6 +8,12 @@ import { Buffer } from 'buffer'
  * event whenever a complete line has arrived.
  * 
  * `'line'` event contains a line with processed data.
+ * 
+ * 
+ * @license GNU Free Documentation License 1.2
+ * 
+ * This class is a derivative work of a Rosetta Code solution
+ * https://rosettacode.org/wiki/Chat_server#JavaScript.
  */
 export class SocketLineBuffer extends EventEmitter {
    /**

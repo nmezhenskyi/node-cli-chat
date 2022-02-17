@@ -6,7 +6,7 @@ TCP chat server & client created with Node.js. CLI is used for client interactio
 
 ## Motivation
 
-The idea behind the project is to write a simple TCP chat server & client using Node.js with no external dependencies. Exceptions are `typescript` and `@types/node` as devDependencies.
+The idea behind the project is to write a simple TCP chat server & client using Node.js with no external dependencies. Exceptions are `typescript` and `@types/node` as devDependencies. Inspired by [Rosetta Code solution](https://rosettacode.org/wiki/Chat_server#JavaScript).
 
 ## Install & Run
 
@@ -21,4 +21,4 @@ The idea behind the project is to write a simple TCP chat server & client using 
 
 ## License
 
-This project is licensed under MIT License (see LICENSE.md).
+This source code is licensed under MIT License (see LICENSE.md) with some exceptions that are licensed under GNU Free Documentation License 1.2. Exceptions are explicitly mentioned in the source code with `@license` notes.

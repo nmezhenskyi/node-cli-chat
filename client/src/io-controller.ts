@@ -5,7 +5,7 @@ import { EventEmitter } from 'events'
 
 /**
  * Handles I/O operations using specified read/write streams.  
- * By default, uses stdin/stdout.
+ * By default uses stdin/stdout.
  */
 export class IOController extends EventEmitter {
    private input
