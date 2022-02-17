@@ -6,11 +6,11 @@ import { SocketLineBuffer } from './socket-line-buffer'
 /**
  * Represents TCP chat server.
  * 
- * 
+ * Listens for connections, registers users, broadcasts user messages.
  */
 export class ChatServer {
    /**
-    * Map of connected users who have successully joined (registered).
+    * Map of registered users (who have successully joined).
     * 
     * `K` - username  
     * `V` - associated User instance
@@ -38,7 +38,12 @@ export class ChatServer {
       })
    }
 
-   handleConnection(connection: net.Socket): void {
+   /**
+    * Called when the server receives a new connection.
+    * 
+    * @param connection Connected socket
+    */
+   private handleConnection(connection: net.Socket): void {
       connection.setEncoding('utf-8')
       let user = new User(connection, this)
       user.on('join', this.handleJoin.bind(this))
@@ -46,44 +51,89 @@ export class ChatServer {
       user.on('leave', this.handleLeave.bind(this))
    }
 
-   handleJoin(user: User) {
+   /**
+    * Called when a connected user has successfully registered on the server.
+    * 
+    * @param user Registered user
+    */
+   private handleJoin(user: User): void {
       console.log(`${user.username} has joined the chat room.`)
       this.addUser(user)
-      this.sendToAll(`${user.username} has joined the chat room.`)
+      this.broadcast(`${user.username} has joined the chat room.`)
    }
 
-   handleSay(user: User, message: string) {
+   /**
+    * Called when a registered user sends a chat message.
+    * 
+    * @param user User who sent a message
+    * @param message Sent message
+    */
+   private handleSay(user: User, message: string): void {
       console.log(`${user.username}: ${message}`)
-      this.sendToAllExcept(user, `${user.username}: ${message}`)
+      this.broadcastExcept(user, `${user.username}: ${message}`)
    }
 
-   handleLeave(user: User) {
+   /**
+    * Called when a user has left the server.
+    * 
+    * @param user User who left the server
+    */
+   private handleLeave(user: User): void {
       console.log(`${user.username} has left the chat room.`)
       this.removeUser(user)
-      this.sendToAll(`${user.username} has left the chat room.`)
+      this.broadcast(`${user.username} has left the chat room.`)
    }
 
-   handleError(error: Error) {
+   /**
+    * Called when the server encountered an error.
+    * 
+    * @param error Encountered errror
+    */
+   private handleError(error: Error): void {
       console.error(error)
    }
 
-   handleClose() {
+   /**
+    * Called when the server has been closed.
+    */
+   private handleClose(): void {
       console.log('Server has been shutdown.')
    }
 
-   addUser(user: User) {
+   /**
+    * Adds a User to the list of registered users.
+    * 
+    * @param user User to add
+    */
+   private addUser(user: User): void {
       this.users.set(user.username, user)
    }
 
-   removeUser(user: User) {
+   /**
+    * Removes a User from the list of registered users.
+    * 
+    * @param user User to remove
+    */
+   private removeUser(user: User): void {
       this.users.delete(user.username)
    }
 
-   sendToAll(message: string) {
+   /**
+    * Broadcasts a message to all registered users.
+    * 
+    * @param message Message to broadcast
+    */
+   private broadcast(message: string): void {
       this.users.forEach(user => user.writeToClient(message))
    }
 
-   sendToAllExcept(except: User, message: string) {
+   /**
+    * Broadcasts a message to all registered users, except for one (usually the original sender).
+    * 
+    * @param except User not to broadcast to
+    * @param message Message to broadcast
+    */
+   private broadcastExcept(except: User, message: string): void {
       this.users.forEach(user => {
          if (user.username !== except.username) {
             user.writeToClient(message)
@@ -91,6 +141,13 @@ export class ChatServer {
       })
    }
 
+   /**
+    * Validates the username. Must be unique, between 1-12 characters, 
+    * and contain only letters and numbers.
+    * 
+    * @param username Username to validate
+    * @returns True if valid, false otherwise
+    */
    isUsernameValid(username: string): boolean {
       if (!/^[A-Za-z0-9]{1,12}$/.test(username)) {
          return false
@@ -105,7 +162,10 @@ export class ChatServer {
       return true
    }
 
-   close() {
+   /**
+    * Forcibly closes all open connections and closes the server.
+    */
+   close(): void {
       this.users.forEach(user => user.leave({ forcedDisconnect: true }))
       this.server.close()
    }
@@ -134,7 +194,9 @@ class User extends EventEmitter {
    lineBuffer: SocketLineBuffer
 
    /**
-    * Creates a User instance. Asks the client socket for the username.
+    * Creates a User instance. Asks the client socket for the username. 
+    * Any received data will be considered as a username until the user has
+    * successfully joined (registered).
     * 
     * @param socket connection socket
     * @param server associated ChatServer instance
@@ -153,6 +215,16 @@ class User extends EventEmitter {
       this.writeToClient('Enter your name:')
    }
 
+   /**
+    * Attempts to register the user in the chat server. If successful,
+    * starts accepting chat messages. Otherwise, asks to select a different
+    * username and try to register again.
+    * 
+    * Registration is not persistent and is valid only for the duration of the 
+    * session.
+    * 
+    * @param username Username to register on the server
+    */
    join(username: string): void {
       if (!this.server.isUsernameValid(username)) {
          this.writeToClient('Selected name is invalid or already taken.')
@@ -171,9 +243,11 @@ class User extends EventEmitter {
    }
 
    /**
+    * Automatically called when the connection is closed on the client side and emits 'leave' event.  
+    * Can also be manually called on the server side (requires passing 
+    * `options` parameter with `forcedDisconnect: true`) and does not emit 'leave' event.
     * 
-    * 
-    * @param options 
+    * @param options Object with options: forcedDisconnect
     */
    leave(options?: { forcedDisconnect: boolean }): void {
       if (options?.forcedDisconnect)
