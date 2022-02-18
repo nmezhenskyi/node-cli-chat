@@ -2,7 +2,7 @@
 
 ## Description
 
-TCP chat server & client created with Node.js. CLI is used for client interaction. The project serves as an example on how to work with the Node's standard library. The main focus is on streams (net socket, readline, stdin/stdout).
+TCP chat server & client created with Node.js. CLI is used for client interaction. The project serves as an example on how to work with Node's `net` and `readline` modules.
 
 ## Motivation
 
