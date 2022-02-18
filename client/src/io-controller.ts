@@ -7,9 +7,19 @@ import { EventEmitter } from 'events'
  * By default uses stdin/stdout.
  */
 export class IOController extends EventEmitter {
+   /**
+    * Read stream used as input.
+    */
    private input: NodeJS.ReadStream
+   /**
+    * Write steam used as output.
+    */
    private output: NodeJS.WriteStream
 
+   /**
+    * @param input Read stream to use as input
+    * @param output Write stream to use as output
+    */
    constructor(input = stdin, output = stdout) {
       super()
       this.input = input
@@ -18,6 +28,12 @@ export class IOController extends EventEmitter {
       this.output.setEncoding('utf-8')
    }
 
+   /**
+    * Prompts the user asynchronously.
+    * 
+    * @param query Query to display before input
+    * @returns Input string provided by user
+    */
    prompt(query: string = '> '): Promise<string> {
       return new Promise(resolve => {
          const rl = readline.createInterface(this.input, this.output)
@@ -28,6 +44,14 @@ export class IOController extends EventEmitter {
       })
    }
 
+   /**
+    * Starts an async input loop that accepts input from the user.
+    * 
+    * - On '/q' emits 'close' event.
+    * - On '/h' shows a help message.
+    * - Any other input string emits 'say' event.
+    * - On SIGINT exits the loop, closes the stream, and propagates SIGINT to the process level.
+    */
    runInputLoop(): Promise<void> {
       return new Promise(resolve => {
          const rl = readline.createInterface(this.input, this.output)
@@ -64,10 +88,18 @@ export class IOController extends EventEmitter {
       })
    }
 
+   /**
+    * Writes the data to the underlying write stream.
+    * 
+    * @param data Data to write
+    */
    write(data: string) {
       this.output.write(data)
    }
 
+   /**
+    * Clears the line in the underlying write stream.
+    */
    clearLine() {
       this.output.clearLine(0)
       this.output.cursorTo(0)
