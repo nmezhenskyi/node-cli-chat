@@ -12,8 +12,9 @@ import { ChatClient } from './chat-client'
 
 const main = async () => {
    try {
-      const PORT = 4000
-      const HOST = '127.0.0.1'
+      const [portArg, hostArg] = process.argv.slice(2)
+      const PORT = portArg && !isNaN(Number(portArg)) ? Number(portArg) : 4000
+      const HOST = hostArg || '127.0.0.1'
 
       const client = new ChatClient(HOST, PORT)
 
