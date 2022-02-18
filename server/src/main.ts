@@ -12,8 +12,9 @@ import { ChatServer } from './chat-server'
 
 const main = () => {
    try {
-      const HOST = '127.0.0.1'
-      const PORT = 4000
+      const [portArg, hostArg] = process.argv.slice(2)
+      const PORT = portArg && !isNaN(Number(portArg)) ? Number(portArg) : 4000
+      const HOST = hostArg || '127.0.0.1'
 
       const server = new ChatServer(HOST, PORT)
 
