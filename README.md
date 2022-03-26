@@ -15,10 +15,6 @@ The idea behind the project is to write a simple TCP chat server & client using 
 3. Run `npm run build` for both the server and the client.
 4. Run `npm start` for the server and then for as many client instances as you want to test.
 
-## Author
-
-* [Nikita Mezhenskyi](https://github.com/nmezhenskyi)
-
 ## License
 
 This source code is licensed under MIT License (see LICENSE.md) with some exceptions that are licensed under GNU Free Documentation License 1.2. Exceptions are explicitly mentioned in the source code with `@license` notes.
